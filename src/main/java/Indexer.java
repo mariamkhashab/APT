@@ -12,6 +12,9 @@ import opennlp.tools.stemmer.PorterStemmer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
+import Models.Website;
+
 import org.json.JSONObject;
 import org.json.JSONException;
 

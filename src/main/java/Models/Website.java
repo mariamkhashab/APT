@@ -1,10 +1,11 @@
+package Models;
 
 public class Website {
-    private int _id;
+    private String _id;
     private String url;
     private int status;
 
-    public int getID()
+    public String getID()
     {
         return _id;
     }
@@ -19,7 +20,7 @@ public class Website {
         return status;
     }
 
-    public void setID(int id)
+    public void setID(String id)
     {
         this._id = id;
     }
