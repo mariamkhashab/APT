@@ -1,8 +1,11 @@
 import java.io.IOException;
+import java.net.URISyntaxException;
+
+import org.json.JSONException;
 
 public class App 
 {
-    public static void main( String[] args ) throws IOException
+    public static void main( String[] args ) throws IOException, URISyntaxException, JSONException
     {
         System.out.println( "Hello World!" );
 
