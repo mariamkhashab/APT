@@ -14,13 +14,21 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import Models.Website;
+import Models.Word;
 
 import org.json.JSONObject;
 import org.json.JSONException;
 
 public class Indexer {
-    List<String> all_words = new ArrayList<>();
+    QueryProcessor QP = new QueryProcessor();
+
+    Hashtable<String,JSONObject> titlesDict;
+    Hashtable<String,JSONObject> headingDict;
+    Hashtable<String,JSONObject> textDict;
+
+    List<Word> all_words = new ArrayList<>();
     List<JSONObject> all_dicts= new ArrayList<>();
+   
     
     List<String> stoppingWords = new ArrayList<String>();
     
@@ -51,45 +59,65 @@ public class Indexer {
     public void preprocessing(Website website) throws IOException, URISyntaxException, JSONException{
         
         String url = website.getURL();
-        Document doc = Jsoup.connect(url).userAgent("Mozilla").get();
-        
+        Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36").get();
+        List<String> addedWords = new ArrayList<>(); // per website
+
         Hashtable<String,JSONObject> titlesDict  = processTitles(doc,url);
         Hashtable<String,JSONObject> headingDict  = processHeadings(doc,url);
-        Hashtable<String,JSONObject> textDict  = processtext(doc,url);
+       Hashtable<String,JSONObject> textDict  = processtext(doc,url);
 
         for (String key : titlesDict.keySet()) {
             JSONObject jo= titlesDict.get(key);
             jo = jo.getJSONObject("url");
-            all_words.add(key);
+            Word word = new Word();
+            word.setWord(key);
+            //word.setdocID(website.getID());
+            all_words.add(word);
             all_dicts.add(jo);
         }
 
         for (String key : headingDict.keySet()) {
             JSONObject jo= headingDict.get(key);
             jo = jo.getJSONObject("url");
-            all_words.add(key);
+            Word word = new Word();
+            word.setWord(key);
+           // word.setdocID(website.getID());
+            all_words.add(word);
             all_dicts.add(jo);
         }
 
         for (String key : textDict.keySet()) {
             JSONObject jo= textDict.get(key);
             jo = jo.getJSONObject("url");
-            all_words.add(key);
+            Word word = new Word();
+            word.setWord(key);
+           // word.setdocID(website.getID());
+            all_words.add(word);
             all_dicts.add(jo);
         }
-        
+
+        // System.out.println(titlesDict);
+        // System.out.println("------------------------------ ");
+        // System.out.println(headingDict);
+        // System.out.println("------------------------------ ");
+        // System.out.println(textDict);
+
+        website.setStatus(3);
+        QP.updateWebpage(website);
+        // add words to database
+        QP.addWord(website,all_words, all_dicts);
     }
 
     public Hashtable<String,JSONObject> processTitles( Document doc,String link) throws URISyntaxException, MalformedURLException
     {
         URI uri = new URI(link);
         String url = uri.getHost().toString();
-        String[] urlcomp = url.split(".");
-        System.out.println(urlcomp );
+        //String[] urlcomp = url.split(".");
+        //System.out.println(urlcomp );
         Hashtable<String,JSONObject> dict = new Hashtable<>();
         Elements elements = doc.select("title");
         String[] words = elements.text().split(" ");
-        
+        //System.out.println(elements );
         List<String> processed= new ArrayList<String>();
         for (String word:words)
         {
@@ -100,7 +128,7 @@ public class Indexer {
             }
         
         }
-        System.out.println(processed);
+        //System.out.println(processed);
         for(String word: processed)
         {
             if(dict.get(word) != null){
@@ -121,6 +149,7 @@ public class Indexer {
             
             }else{
                 JSONObject obj = new JSONObject();
+                JSONObject j = new JSONObject();
                
                 try {
                     obj.put("termFreq", 1);
@@ -128,11 +157,12 @@ public class Indexer {
                     obj.put("titlefreq", 1);            
                     obj.put("textFreq", 0);
                     obj.put("url", url);
+                    j.put("url", obj);
                    
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                dict.put(word, obj);
+                dict.put(word, j);
                 // System.out.println(obj);
                 // System.out.println(json); 
                 // System.out.println("------------------------------ "); 
@@ -173,8 +203,9 @@ public class Indexer {
             if(word!=""  && !stoppingWords.contains(word.toLowerCase())){
                 processed.add(stem(word));
             }
-           
+            
          }
+         //System.out.println(processed);
         for(String word: processed)
         {
             if(dict.get(word) != null){
@@ -195,6 +226,7 @@ public class Indexer {
             
             }else{
                 JSONObject obj = new JSONObject();
+                JSONObject j = new JSONObject();
                
                 try {
                     obj.put("termFreq", 0);
@@ -202,12 +234,13 @@ public class Indexer {
                     obj.put("titlefreq", 0);            
                     obj.put("textFreq", 0);
                     obj.put("url", url);
+                    j.put("url", obj);
                    
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                dict.put(word, obj);
-                 System.out.println(dict);
+                dict.put(word, j);
+                 //System.out.println(dict);
                 // System.out.println(json); 
                 // System.out.println("------------------------------ "); 
             }
@@ -265,24 +298,26 @@ public class Indexer {
             
             }else{
                 JSONObject obj = new JSONObject();
-               
+                JSONObject j = new JSONObject();
                 try {
                     obj.put("termFreq", 1);
                     obj.put("headingsFreq", 0);
                     obj.put("titlefreq", 0);            
                     obj.put("textFreq", 1);
                     obj.put("url", url);
+                    j.put("url", obj);
                    
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                dict.put(word, obj);
+                dict.put(word, j);
                 // System.out.println(obj);
                 // System.out.println(json); 
                 // System.out.println("------------------------------ "); 
             }
         }
         
+
         return dict;
     }
 }

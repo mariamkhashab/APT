@@ -13,15 +13,18 @@ public class App
         QueryProcessor queryProcessor = new QueryProcessor();
         Website w = new Website();
         Indexer indexer = new Indexer();
-        w.setURL("https://www.geeksforgeeks.org/");
+        w.setURL("https://stackoverflow.com/questions/56539582/how-to-insert-json-data-into-database");
         w.setStatus(2);
+
+        //this function will loop over each website
+        indexer.preprocessing(w);
         
         // Test QueryProcessing
-        queryProcessor.insertWebpage(w);
-        w = queryProcessor.getWebpage("https://www.geeksforgeeks.org/");
-        System.out.println(w.getURL());
+        //queryProcessor.insertWebpage(w);
+        // w = queryProcessor.getWebpage("https://www.geeksforgeeks.org/");
+        // System.out.println(w.getURL());
 
-        indexer.preprocessing(w);
+        
     }
     
 
