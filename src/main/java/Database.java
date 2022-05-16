@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import Models.Website;
 import Models.Word;
 
-public class QueryProcessor {
+public class Database {
 
     private MongoClient mongoClient = null;
     MongoCollection<Document> webpagesCollection;

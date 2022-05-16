@@ -20,7 +20,7 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 public class Indexer {
-    QueryProcessor QP = new QueryProcessor();
+    Database QP = new Database();
 
     Hashtable<String,JSONObject> titlesDict;
     Hashtable<String,JSONObject> headingDict;

@@ -10,7 +10,7 @@ public class App
     public static void main( String[] args ) throws IOException, URISyntaxException, JSONException
     {
         System.out.println( "Hello World!" );
-        QueryProcessor queryProcessor = new QueryProcessor();
+        Database database = new Database();
         Website w = new Website();
         Indexer indexer = new Indexer();
         w.setURL("https://stackoverflow.com/questions/56539582/how-to-insert-json-data-into-database");
