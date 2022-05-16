@@ -1,5 +1,8 @@
+import java.util.ArrayList;
 import java.util.List;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -10,7 +13,6 @@ import org.bson.Document;
 import org.json.JSONObject;
 
 import Models.Website;
-import Models.Word;
 
 public class Database {
 
@@ -102,7 +104,7 @@ public class Database {
     }
 
 
-    public void addWord(Website website, List<Word> words,List<JSONObject> dicts)
+    public void insertWords(List<String> words,List<JSONObject> dicts)
     {
         
         try {
@@ -110,31 +112,36 @@ public class Database {
             mongoConnect();
             MongoDatabase db = mongoClient.getDatabase("SearchEngine");
             indexerCollection = db.getCollection("indexer");
-            webpagesCollection = db.getCollection("webpages");
-            for (Word word: words)
-            {
-                if (!(word.getURLS()).contains(website.getURL()))
-                {
-                    word.addURL(website.getURL());
-                }
-               
-               
-            }
 
-            updateDF(words);
+            for (int i = 0; i < words.size(); i++)
+            {
+                Document doc = new Document();
+                doc.append("word", words.get(i));
+                Object o = BasicDBObject.parse(dicts.get(i).toString());
+                DBObject dbObj = (DBObject) o;
+                Document found = indexerCollection.find(Filters.eq("word", words.get(i))).first();
+                if (found != null)
+                {
+                    doc.append("df", found.getInteger("df") + 1);
+                    List<DBObject> appearancesList  = (List<DBObject>) found.get("metadata");
+                    appearancesList.add(dbObj);
+                    doc.append("metadata",appearancesList);
+                    indexerCollection.updateOne(Filters.eq("word", words.get(i)), new Document("$set", doc));
+                }
+                else
+                {
+                    List<DBObject> appearancesList = new ArrayList<DBObject>();
+                    appearancesList.add(dbObj);
+                    doc.append("df", 1);
+                    doc.append("metadata", appearancesList);
+                    indexerCollection.insertOne(doc);
+                }
+            }
            
 
         } catch (Exception e) {
 
             e.printStackTrace();
         }
-    }
-    public void updateDF( List<Word> words)
-    { 
-        for (Word word: words)
-        {
-            word.setDF(word.getURLS().size());
-        }
-
     }
 }

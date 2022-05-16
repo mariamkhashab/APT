@@ -14,19 +14,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import Models.Website;
-import Models.Word;
 
 import org.json.JSONObject;
 import org.json.JSONException;
 
 public class Indexer {
-    Database QP = new Database();
+    Database db = new Database();
 
     Hashtable<String,JSONObject> titlesDict;
     Hashtable<String,JSONObject> headingDict;
     Hashtable<String,JSONObject> textDict;
 
-    List<Word> all_words = new ArrayList<>();
+    List<String> all_words = new ArrayList<>();
     List<JSONObject> all_dicts= new ArrayList<>();
    
     
@@ -69,30 +68,21 @@ public class Indexer {
         for (String key : titlesDict.keySet()) {
             JSONObject jo= titlesDict.get(key);
             jo = jo.getJSONObject("url");
-            Word word = new Word();
-            word.setWord(key);
-            //word.setdocID(website.getID());
-            all_words.add(word);
+            all_words.add(key);
             all_dicts.add(jo);
         }
 
         for (String key : headingDict.keySet()) {
             JSONObject jo= headingDict.get(key);
             jo = jo.getJSONObject("url");
-            Word word = new Word();
-            word.setWord(key);
-           // word.setdocID(website.getID());
-            all_words.add(word);
+            all_words.add(key);
             all_dicts.add(jo);
         }
 
         for (String key : textDict.keySet()) {
             JSONObject jo= textDict.get(key);
             jo = jo.getJSONObject("url");
-            Word word = new Word();
-            word.setWord(key);
-           // word.setdocID(website.getID());
-            all_words.add(word);
+            all_words.add(key);
             all_dicts.add(jo);
         }
 
@@ -103,9 +93,9 @@ public class Indexer {
         // System.out.println(textDict);
 
         website.setStatus(3);
-        QP.updateWebpage(website);
+        db.updateWebpage(website);
         // add words to database
-        QP.addWord(website,all_words, all_dicts);
+        db.insertWords(all_words, all_dicts);
     }
 
     public Hashtable<String,JSONObject> processTitles( Document doc,String link) throws URISyntaxException, MalformedURLException
