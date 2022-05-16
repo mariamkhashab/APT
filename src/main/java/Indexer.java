@@ -86,11 +86,11 @@ public class Indexer {
             all_dicts.add(jo);
         }
 
-        // System.out.println(titlesDict);
-        // System.out.println("------------------------------ ");
-        // System.out.println(headingDict);
-        // System.out.println("------------------------------ ");
-        // System.out.println(textDict);
+        System.out.println(titlesDict);
+        System.out.println("------------------------------ ");
+        System.out.println(headingDict);
+        System.out.println("------------------------------ ");
+        System.out.println(textDict);
 
         website.setStatus(3);
         db.updateWebpage(website);
@@ -219,7 +219,7 @@ public class Indexer {
                 JSONObject j = new JSONObject();
                
                 try {
-                    obj.put("termFreq", 0);
+                    obj.put("termFreq", 1);
                     obj.put("headingsFreq", 1);
                     obj.put("titlefreq", 0);            
                     obj.put("textFreq", 0);
