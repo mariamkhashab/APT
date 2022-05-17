@@ -17,6 +17,7 @@ public class App
         w.setStatus(2);
 
         //this function will loop over each website
+        //preprocess only if status = 2 (not indexed)
         indexer.preprocessing(w);
         
         // Test QueryProcessing
