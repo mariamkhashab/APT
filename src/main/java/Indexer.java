@@ -9,7 +9,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.print.DocFlavor.STRING;
 
 import opennlp.tools.stemmer.PorterStemmer;
 import org.jsoup.Jsoup;
@@ -50,7 +49,7 @@ public class Indexer {
            
             e.printStackTrace();
         }
-       // System.out.print(stoppingWords); 
+ 
     }
 
     public String stem(String input)
@@ -62,11 +61,14 @@ public class Indexer {
     public void preprocessing(Website website) throws IOException, URISyntaxException, JSONException{
         
         String url = website.getURL();
+        //get document
         Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36").get();
-       // List<String> addedWords = new ArrayList<>(); // per website
-       Elements titleelements = doc.select("title");
+       
+        //extract title elements
+        Elements titleelements = doc.select("title");
         String[] titlewords = titleelements.text().split(" ");
 
+        //extract heading elements
         Elements Headingelements = doc.select("h1");
         doc.select("h2").forEach((e)->{
             Headingelements.add(e);
@@ -83,9 +85,9 @@ public class Indexer {
         doc.select("h6").forEach((e)->{
             Headingelements.add(e);
         });
-        
         String[] Headingwords = Headingelements.text().split(" ");
 
+        //extract text elements
         Elements Textelements = doc.select("p");
         doc.select("li").forEach((e)->{
             Textelements.add(e);
@@ -95,29 +97,29 @@ public class Indexer {
         });
         String[] Textwords = Textelements.text().split(" ");
        
+        // length of document for normalization
         all_count+= titlewords.length;
         all_count+= Headingwords.length;
         all_count+= Textwords.length;
 
-       System.out.println(all_count);
+       //process titles, headings &text
         Hashtable<String,JSONObject> titlesDict  = processTitles(titlewords,doc,url);
         Hashtable<String,JSONObject> headingDict  = processHeadings(Headingwords,doc,url);
        Hashtable<String,JSONObject> textDict  = processtext(Textwords,doc,url);
 
+       //merge processed words in 1 list and 1 dict
         for (String key : titlesDict.keySet()) {
             JSONObject jo= titlesDict.get(key);
             jo = jo.getJSONObject("url");
             all_words.add(key);
             all_dicts.add(jo);
         }
-
         for (String key : headingDict.keySet()) {
             JSONObject jo= headingDict.get(key);
             jo = jo.getJSONObject("url");
             all_words.add(key);
             all_dicts.add(jo);
         }
-
         for (String key : textDict.keySet()) {
             JSONObject jo= textDict.get(key);
             jo = jo.getJSONObject("url");
@@ -125,14 +127,11 @@ public class Indexer {
             all_dicts.add(jo);
         }
         
-        // System.out.println(titlesDict);
-        // System.out.println("------------------------------ ");
-        // System.out.println(headingDict);
-        // System.out.println("------------------------------ ");
-        // System.out.println(textDict);
 
+        //update website status to indexed
         website.setStatus(3);
         db.updateWebpage(website);
+
         // add words to database
         db.insertWords(all_words, all_dicts);
         all_count=0;
@@ -142,23 +141,20 @@ public class Indexer {
     {
         URI uri = new URI(link);
         String url = uri.getHost().toString();
-        //String[] urlcomp = url.split(".");
-        //System.out.println(urlcomp );
+
         Hashtable<String,JSONObject> dict = new Hashtable<>();
-        //Elements elements = doc.select("title");
-        //String[] words = elements.text().split(" ");
-        //System.out.println(elements );
+
         List<String> processed= new ArrayList<String>();
         for (String word:words)
         {
-            //BY DETECT SPACES BARDO
+            //BY DETECT SPACES BARDO (TABS)
             word = word.replaceAll("[^A-Za-z]", "");
             if(word!=""  && !stoppingWords.contains(word.toLowerCase())){
                 processed.add(stem(word));
             }
         
         }
-        //System.out.println(processed);
+
         for(String word: processed)
         {
             if(dict.get(word) != null){
@@ -172,9 +168,6 @@ public class Indexer {
                     dict.get(word).getJSONObject("url").put("termFreq", termFreq);
                     dict.get(word).getJSONObject("url").put("frequency", titlefreq);
                     dict.get(word).getJSONObject("url").put("Normfrequency", (float)termFreq/all_count);
-                    System.out.println(word);
-                    System.out.println((float)termFreq/all_count);
-                    System.out.println(".............................................");
                 } catch (JSONException e) {
                     
                     e.printStackTrace();
@@ -197,9 +190,7 @@ public class Indexer {
                     e.printStackTrace();
                 }
                 dict.put(word, j);
-                // System.out.println(obj);
-                // System.out.println(json); 
-                // System.out.println("------------------------------ "); 
+               
             }
         }
         
@@ -211,7 +202,7 @@ public class Indexer {
        
         Hashtable<String,JSONObject> dict = new Hashtable<>();
         
-        //System.out.println(elements);
+     
         List<String> processed= new ArrayList<String>();
         for (String word:words)
         {
@@ -222,7 +213,7 @@ public class Indexer {
             }
             
          }
-         //System.out.println(processed);
+       
         for(String word: processed)
         {
             if(dict.get(word) != null){
@@ -236,9 +227,6 @@ public class Indexer {
                     dict.get(word).getJSONObject("url").put("termFreq", termFreq);
                     dict.get(word).getJSONObject("url").put("headingsFreq", headingsFreq);
                     dict.get(word).getJSONObject("url").put("Normfrequency", (float)termFreq/all_count);
-                    System.out.println(word);
-                    System.out.println((float)termFreq/all_count);
-                    System.out.println(".............................................");
                 } catch (JSONException e) {
                     
                     e.printStackTrace();
@@ -261,9 +249,7 @@ public class Indexer {
                     e.printStackTrace();
                 }
                 dict.put(word, j);
-                 //System.out.println(dict);
-                // System.out.println(json); 
-                // System.out.println("------------------------------ "); 
+              
             }
        }
         
@@ -274,10 +260,6 @@ public class Indexer {
     {
         URI uri = new URI(link);
         String url = uri.getHost().toString();
-        //String[] url_comp = url.split(".");
-        // //String url = url_comp[1];
-        // for (String a : url_comp)
-        //     System.out.println(a);
         Hashtable<String,JSONObject> dict = new Hashtable<>();
        
         
@@ -291,7 +273,6 @@ public class Indexer {
             }
         
         }
-        //System.out.println(processed);
         for(String word: processed)
         {
             if(dict.get(word) != null){
@@ -305,10 +286,6 @@ public class Indexer {
                     dict.get(word).getJSONObject("url").put("termFreq", termFreq);
                     dict.get(word).getJSONObject("url").put("textFreq", textFreq);
                     dict.get(word).getJSONObject("url").put("Normfrequency",(float) termFreq/all_count);
-                    System.out.println(word);
-                    System.out.println((float)termFreq/all_count);
-                    System.out.println(".............................................");
-                    //System.out.println(termFreq/all_count);
                 } catch (JSONException e) {
                     
                     e.printStackTrace();
@@ -330,9 +307,7 @@ public class Indexer {
                     e.printStackTrace();
                 }
                 dict.put(word, j);
-                // System.out.println(obj);
-                // System.out.println(json); 
-                // System.out.println("------------------------------ "); 
+             
             }
         }
         

@@ -99,21 +99,6 @@ public class App
 
 
 
-        /////////////////
-        // 
-        // 
-        // w.setURL("https://stackoverflow.com/questions/56539582/how-to-insert-json-data-into-database");
-        // w.setStatus(2);
-
-        // //this function will loop over each website
-        // //preprocess only if status = 2 (not indexed)
-        // indexer.preprocessing(w);
-        
-        // // Test QueryProcessing
-        // //queryProcessor.insertWebpage(w);
-        // // w = queryProcessor.getWebpage("https://www.geeksforgeeks.org/");
-        // // System.out.println(w.getURL());
-
         
     }
     
