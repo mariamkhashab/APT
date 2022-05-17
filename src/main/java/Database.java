@@ -1,15 +1,23 @@
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.UpdateOneModel;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.model.WriteModel;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.json.JSONObject;
 
 import Models.Website;
@@ -31,6 +39,137 @@ public class Database {
         } catch (Exception e) {
             throw e;
         }
+    }
+    public boolean createWebsites(LinkedList<String> url, int status) {
+        try {
+            mongoConnect();
+            MongoDatabase mDatabase = mongoClient.getDatabase("SearchEngine");
+            MongoCollection<Document> crawlerCollection = mDatabase.getCollection("webpages");
+            UpdateOptions updateOptions = new UpdateOptions();
+            updateOptions.upsert(true);
+
+            List<WriteModel<Document>> updates = new ArrayList<WriteModel<Document>>();
+            for (int i = 0; i < url.size(); i++) {
+                Bson update = Updates.setOnInsert("status", status);
+                updates.add(new UpdateOneModel<Document>(new Document("url", url.get(i)).append("content",""), update,
+                        new UpdateOptions().upsert(true)));
+            }
+            // com.mongodb.bulk.BulkWriteResult bulkWriteResult =
+            crawlerCollection.bulkWrite(updates);
+
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    public synchronized boolean updateStatus(String url, int status) {
+
+        try {
+
+            mongoConnect();
+            MongoDatabase mDatabase = mongoClient.getDatabase("SearchEngine");
+            MongoCollection<Document> crawlerCollection = mDatabase.getCollection("webpages");
+            Bson queryFilter = Filters.eq("url", url);
+            Bson updateFilter = Updates.set("status", status);
+            Document result = crawlerCollection.findOneAndUpdate(queryFilter, updateFilter);
+            if (result == null) {
+
+                return false;
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    public synchronized boolean updateContent(String url, String content) {
+
+        try {
+
+            mongoConnect();
+            MongoDatabase mDatabase = mongoClient.getDatabase("SearchEngine");
+            MongoCollection<Document> crawlerCollection = mDatabase.getCollection("webpages");
+            Bson queryFilter = Filters.eq("url", url);
+            Bson updateFilter = Updates.set("content", content);
+            Document result = crawlerCollection.findOneAndUpdate(queryFilter, updateFilter);
+            if (result == null) {
+
+                return false;
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    public  LinkedList<String> getWebsitesByStatus(int status) {
+        try {
+            mongoConnect();
+            Bson filter = Filters.eq("status", status);
+            MongoDatabase mDatabase = mongoClient.getDatabase("SearchEngine");
+            MongoCollection<Document> crawlerCollection = mDatabase.getCollection("webpages");
+            FindIterable<Document> websites = crawlerCollection.find(filter);
+            LinkedList<String> urls = new LinkedList<String>();
+            for (Document doc : websites) {
+                urls.add(doc.getString("url"));
+            }
+
+            return urls;
+        } catch (Exception e) {
+            System.out.println(e.toString());
+
+        }
+        return null;
+
+    }
+
+    public  LinkedHashSet<String> getWebsitesContents() {
+        try {
+            mongoConnect();
+            Bson filter = Filters.ne("content", "");
+            MongoDatabase mDatabase = mongoClient.getDatabase("SearchEngine");
+            MongoCollection<Document> crawlerCollection = mDatabase.getCollection("webpages");
+            FindIterable<Document> websites = crawlerCollection.find(filter);
+            LinkedHashSet<String> contents = new LinkedHashSet<String>();
+
+            for (Document doc : websites) {
+                contents.add(doc.getString("content"));
+            }
+
+            return contents;
+        } catch (Exception e) {
+            System.out.println(e.toString());
+
+        }
+        return null;
+
+    }
+    public  LinkedList<String> getWebsites() {
+        try {
+            mongoConnect();
+            MongoDatabase mDatabase = mongoClient.getDatabase("SearchEngine");
+            MongoCollection<Document> crawlerCollection = mDatabase.getCollection("webpages");
+            FindIterable<Document> websites = crawlerCollection.find();
+
+            LinkedList<String> webpages = new LinkedList<>();
+
+            for (Document doc : websites) {
+                webpages.add(doc.getString("url"));
+            }
+
+            return webpages;
+        } catch (Exception e) {
+            System.out.println(e.toString());
+
+        }
+        return null;
+
     }
 
     public void insertWebpage(Website website) {
