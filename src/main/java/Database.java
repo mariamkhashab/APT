@@ -243,7 +243,7 @@ public class Database {
             Document doc = new Document();
             doc.append("url", website.getURL());
             doc.append("status", website.getStatus());
-            webpagesCollection.updateOne(Filters.eq("_id", website.getID()), new Document("$set", doc));
+            webpagesCollection.updateOne(Filters.eq("url", website.getURL()), new Document("$set", doc));
         } catch (Exception e) {
 
             e.printStackTrace();

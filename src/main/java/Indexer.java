@@ -105,7 +105,7 @@ public class Indexer {
        //process titles, headings &text
         Hashtable<String,JSONObject> titlesDict  = processTitles(titlewords,doc,url);
         Hashtable<String,JSONObject> headingDict  = processHeadings(Headingwords,doc,url);
-       Hashtable<String,JSONObject> textDict  = processtext(Textwords,doc,url);
+        Hashtable<String,JSONObject> textDict  = processtext(Textwords,doc,url);
 
        //merge processed words in 1 list and 1 dict
         for (String key : titlesDict.keySet()) {
