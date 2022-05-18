@@ -51,7 +51,7 @@ public class Database {
             List<WriteModel<Document>> updates = new ArrayList<WriteModel<Document>>();
             for (int i = 0; i < url.size(); i++) {
                 Bson update = Updates.setOnInsert("status", status);
-                updates.add(new UpdateOneModel<Document>(new Document("url", url.get(i)).append("content",""), update,
+                updates.add(new UpdateOneModel<Document>(new Document("url", url.get(i)).append("content","-1"), update,
                         new UpdateOptions().upsert(true)));
             }
             // com.mongodb.bulk.BulkWriteResult bulkWriteResult =
@@ -107,6 +107,27 @@ public class Database {
             return false;
         }
     }
+    public synchronized boolean updateWebsiteHrefs (String url, List<String>  Hrefs) {
+
+        try {
+
+            mongoConnect();
+            MongoDatabase mDatabase = mongoClient.getDatabase("SearchEngine");
+            MongoCollection<Document> crawlerCollection = mDatabase.getCollection("webpages");
+            Bson queryFilter = Filters.eq("url", url);
+            Bson updateFilter = Updates.set("links", Hrefs);
+            Document result = crawlerCollection.findOneAndUpdate(queryFilter, updateFilter);
+            if (result == null) {
+
+                return false;
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return false;
+        }
+    }
 
     public  LinkedList<String> getWebsitesByStatus(int status) {
         try {
@@ -132,7 +153,7 @@ public class Database {
     public  LinkedHashSet<String> getWebsitesContents() {
         try {
             mongoConnect();
-            Bson filter = Filters.ne("content", "");
+            Bson filter = Filters.ne("content", "-1");
             MongoDatabase mDatabase = mongoClient.getDatabase("SearchEngine");
             MongoCollection<Document> crawlerCollection = mDatabase.getCollection("webpages");
             FindIterable<Document> websites = crawlerCollection.find(filter);
@@ -164,6 +185,33 @@ public class Database {
             }
 
             return webpages;
+        } catch (Exception e) {
+            System.out.println(e.toString());
+
+        }
+        return null;
+
+    }
+
+    public  List<String> getWebsitesLinks(String url) {
+
+        try {
+            mongoConnect();
+            Bson filter = Filters.eq("url", url);
+            MongoDatabase mDatabase = mongoClient.getDatabase("SearchEngine");
+            MongoCollection<Document> crawlerCollection = mDatabase.getCollection("webpages");
+            FindIterable<Document> websites = crawlerCollection.find(filter);
+
+
+            List<String> links = new LinkedList<String>();
+
+            for (Document doc : websites) {
+//                webpages.add(doc.getString("url"));
+
+                links = doc.getList("links",String.class);
+            }
+
+            return links;
         } catch (Exception e) {
             System.out.println(e.toString());
 

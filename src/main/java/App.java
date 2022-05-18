@@ -19,11 +19,11 @@ public class App
     public static void main( String[] args ) throws IOException, URISyntaxException, JSONException, InterruptedException
     {
         
-        Database DB = new Database();
+            Database DB = new Database();
             Scanner sc = new Scanner(System.in);
             Indexer indexer = new Indexer();
-    
 
+            System.out.println("====================Search Engine=====================");
             System.out.println("|                 1- Start Crawling                  |");
             System.out.println("|                                                    |");
             System.out.println("|                 2- Start Indexing                  |");
@@ -54,7 +54,8 @@ public class App
                 urlsCompactStrings = DB.getWebsitesContents();
                 visited.addAll(temp_visited) ;
                 System.out.println("queue len = "+queue.size()+" visited length "+temp_visited.size());
-    
+
+
                 if (queue.size() ==0 && visited.size() == 0)
                 {
                     readSeedList(queue);
@@ -79,12 +80,12 @@ public class App
                     threadArray[i].join();
                 }
     
-                System.out.println("there are "+numberOfThreads +" threads and the Time taken to crawl 50 is " + (System.currentTimeMillis() - beforeTime) / 1000 + " seconds.");
+                System.out.println("there are "+numberOfThreads +" threads and the Time taken to crawl 5000 is " + (System.currentTimeMillis() - beforeTime) / 1000 + " seconds.");
             }
             else {
                 // indexer code
                 List<String> indexer_input = new LinkedList<String>();
-                indexer_input =  DB.getWebsitesByStatus(2); // crawled but not indexed 
+                indexer_input =  DB.getWebsites(); // crawled but not indexed
                 System.out.println(indexer_input);
                 for (int i = 0 ; i <indexer_input.size(); i++ )
                 {

@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class robotManager {
 
     static LinkedHashMap<String, RobotRules> urls = new LinkedHashMap<String, RobotRules>();
-    static String name = "Fa5orgy";
+    static String name = "finderBOT";
 
     public static void readRobotTxt(URL url) {
 
@@ -98,49 +98,6 @@ public class robotManager {
         RobotRules rule = urls.get(hostName);
 
         return rule.isAllowed(path);
-    }
-
-    public static void main(String[] args) {
-        try{
-
-            Document doc = Jsoup.connect("https://www.imdb.com/list/ls500936554/?ref_=watch_wchgd_1_5_m_wtw_disney_i").get();
-
-            // System.out.println("Downloading "+Thread.currentThread().getName() +
-            // urlString);
-            // Download the page
-            int i = 0;
-            // Extract URLs
-            Elements hrefs = doc.select("a");
-
-            for (Element href : hrefs) {
-                String absLink = href.attr("abs:href");
-                if (absLink.length() == 0)
-                    continue;
-                URL temp = new URL(absLink);
-
-                if (!temp.getProtocol().equals("http") && !temp.getProtocol().equals("https"))
-                    continue;
-                String path = temp.getPath();
-                if (path == null || path.isEmpty() || path.equals("/index.html") || path.equals("/#"))
-                    path = "/";
-                URI link = new URI(temp.getProtocol(), temp.getUserInfo(), temp.getHost().toLowerCase(), temp.getPort(),
-                        path, temp.getQuery(), temp.getRef());
-
-                if (!robotManager.isAllowed(link.toURL())) {
-                    System.out.println("link Disallowed: "+link.toASCIIString());
-                    continue;
-                }
-                i++;
-                System.out.println("link allowed: "+link.toASCIIString());
-
-                // System.out.println(absLink+ " Allowed");
-                String url = link.toASCIIString();
-            }
-
-            System.out.println("Number of new links " + i);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
     }
 }
 

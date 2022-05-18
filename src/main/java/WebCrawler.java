@@ -25,7 +25,7 @@ public class WebCrawler extends Thread implements Runnable{
 
 
     private static int check = 0;
-    final private static int maxPages = 20;
+    final private static int maxPages = 5000;
     private Set<String> Visited;
     private List<String> queue;
     private LinkedHashSet<String> urlsCompactStrings ;
@@ -60,7 +60,7 @@ public class WebCrawler extends Thread implements Runnable{
     }
 
     //public void webCrawl() throws IOException,FileNotFoundException{
-    public void webCrawl() throws IOException,FileNotFoundException,MalformedURLException,HttpStatusException,UnsupportedMimeTypeException {
+    public void webCrawl() throws IOException,MalformedURLException,HttpStatusException {
         {
             String currentUrl = null;
 
@@ -93,23 +93,18 @@ public class WebCrawler extends Thread implements Runnable{
                 if (currentUrl != null) {
                     String content = getCompactContent(currentUrl);
                     if (urlsCompactStrings.contains(content)) {
-                        System.out.println("skipped url "+currentUrl+" its content "+content);
-
+//                        System.out.println("skipped url "+currentUrl+" its content "+content);
                         continue;
                     }
                     else
                     {
                         urlsCompactStrings.add(content);
-                        //List<String> links = new LinkedList<String>();
                         LinkedList<String> links = new LinkedList<String>();
                         links = Scrape(currentUrl);
                         queue.addAll(links);
-                        /*
-                     * Add to database new links and set as unvisited
-                     * mark the currentURL as crawled
-                     */
                         DB.createWebsites (links, STATUS.UNTAKEN.ordinal());
                         DB.updateContent(currentUrl,content);
+                        DB.updateWebsiteHrefs(currentUrl,links);
                     }
                 }
             }
