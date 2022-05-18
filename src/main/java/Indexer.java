@@ -160,14 +160,14 @@ public class Indexer {
             if(dict.get(word) != null){
 
                 int termFreq;
-                int titlefreq;
+                int titleFreq;
                 try {
 
                     termFreq = dict.get(word).getJSONObject("url").getInt("termFreq")+1;
-                    titlefreq = dict.get(word).getJSONObject("url").getInt("titlefreq")+1;
+                    titleFreq = dict.get(word).getJSONObject("url").getInt("titleFreq")+1;
                     dict.get(word).getJSONObject("url").put("termFreq", termFreq);
-                    dict.get(word).getJSONObject("url").put("frequency", titlefreq);
-                    dict.get(word).getJSONObject("url").put("Normfrequency", (float)termFreq/all_count);
+                    dict.get(word).getJSONObject("url").put("titleFreq", titleFreq);
+                    dict.get(word).getJSONObject("url").put("normalFreq", (float)termFreq/all_count);
                 } catch (JSONException e) {
                     
                     e.printStackTrace();
@@ -180,9 +180,9 @@ public class Indexer {
                 try {
                     obj.put("termFreq", 1);
                     obj.put("headingsFreq", 0);
-                    obj.put("titlefreq", 1);            
+                    obj.put("titleFreq", 1);            
                     obj.put("textFreq", 0);
-                    obj.put("Normfrequency", 0);
+                    obj.put("normalFreq", 0);
                     obj.put("url", url);
                     j.put("url", obj);
                    
@@ -226,7 +226,7 @@ public class Indexer {
                     headingsFreq = dict.get(word).getJSONObject("url").getInt("headingsFreq")+1;
                     dict.get(word).getJSONObject("url").put("termFreq", termFreq);
                     dict.get(word).getJSONObject("url").put("headingsFreq", headingsFreq);
-                    dict.get(word).getJSONObject("url").put("Normfrequency", (float)termFreq/all_count);
+                    dict.get(word).getJSONObject("url").put("normalFreq", (float)termFreq/all_count);
                 } catch (JSONException e) {
                     
                     e.printStackTrace();
@@ -239,9 +239,9 @@ public class Indexer {
                 try {
                     obj.put("termFreq", 1);
                     obj.put("headingsFreq", 1);
-                    obj.put("titlefreq", 0);            
+                    obj.put("titleFreq", 0);            
                     obj.put("textFreq", 0);
-                    obj.put("Normfrequency", 0);
+                    obj.put("normalFreq", 0);
                     obj.put("url", url);
                     j.put("url", obj);
                    
@@ -285,7 +285,7 @@ public class Indexer {
                     textFreq = dict.get(word).getJSONObject("url").getInt("textFreq")+1;
                     dict.get(word).getJSONObject("url").put("termFreq", termFreq);
                     dict.get(word).getJSONObject("url").put("textFreq", textFreq);
-                    dict.get(word).getJSONObject("url").put("Normfrequency",(float) termFreq/all_count);
+                    dict.get(word).getJSONObject("url").put("normalFreq",(float) termFreq/all_count);
                 } catch (JSONException e) {
                     
                     e.printStackTrace();
@@ -297,9 +297,9 @@ public class Indexer {
                 try {
                     obj.put("termFreq", 1);
                     obj.put("headingsFreq", 0);
-                    obj.put("titlefreq", 0);            
+                    obj.put("titleFreq", 0);            
                     obj.put("textFreq", 1);
-                    obj.put("Normfrequency", 0);
+                    obj.put("normalFreq", 0);
                     obj.put("url", url);
                     j.put("url", obj);
                    
