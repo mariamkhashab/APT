@@ -241,7 +241,6 @@ public class Database {
             MongoDatabase db = mongoClient.getDatabase("SearchEngine");
             webpagesCollection = db.getCollection("webpages");
             Document doc = new Document();
-            doc.append("url", website.getURL());
             doc.append("status", website.getStatus());
             webpagesCollection.updateOne(Filters.eq("url", website.getURL()), new Document("$set", doc));
         } catch (Exception e) {
@@ -261,6 +260,8 @@ public class Database {
                 website.setID(doc.getObjectId("_id").toString());
                 website.setURL(doc.getString("url"));
                 website.setStatus(doc.getInteger("status"));
+                website.setContent(doc.getString("content"));
+                List<String> links = doc.getList("links", String.class);
                 return website;
             }
         } catch (Exception e) {
