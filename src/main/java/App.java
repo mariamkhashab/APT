@@ -85,13 +85,11 @@ public class App
             else {
                 // indexer code
                 List<String> indexer_input = new LinkedList<String>();
-                indexer_input =  DB.getWebsites(); // crawled but not indexed
+                indexer_input =  DB.getWebsitesByStatus(2); // crawled but not indexed
                 System.out.println(indexer_input);
                 for (int i = 0 ; i <indexer_input.size(); i++ )
                 {
-                    Website w = new Website();
-                    w.setURL(indexer_input.get(i));
-                    w.setStatus(2);
+                    Website w = DB.getWebpage(indexer_input.get(i));
                     indexer.preprocessing(w);
                 }
             }
