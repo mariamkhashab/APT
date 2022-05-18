@@ -137,11 +137,8 @@ public class Indexer {
         all_count=0;
     }
 
-    public Hashtable<String,JSONObject> processTitles( String[] words,Document doc,String link) throws URISyntaxException, MalformedURLException
+    public Hashtable<String,JSONObject> processTitles( String[] words,Document doc,String url) throws URISyntaxException, MalformedURLException
     {
-        URI uri = new URI(link);
-        String url = uri.getHost().toString();
-
         Hashtable<String,JSONObject> dict = new Hashtable<>();
 
         List<String> processed= new ArrayList<String>();
@@ -256,10 +253,8 @@ public class Indexer {
         return dict;
     }
 
-    public Hashtable<String,JSONObject> processtext(String[] words, Document doc,String link) throws URISyntaxException, MalformedURLException
+    public Hashtable<String,JSONObject> processtext(String[] words, Document doc,String url) throws URISyntaxException, MalformedURLException
     {
-        URI uri = new URI(link);
-        String url = uri.getHost().toString();
         Hashtable<String,JSONObject> dict = new Hashtable<>();
        
         
