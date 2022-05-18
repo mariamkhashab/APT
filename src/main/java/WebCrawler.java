@@ -54,12 +54,11 @@ public class WebCrawler extends Thread implements Runnable{
         }
         catch (IOException ex)
         {
-//            Logger.getLogger(WebCrawler.class.getName()).log(null);
+
         }
 
     }
 
-    //public void webCrawl() throws IOException,FileNotFoundException{
     public void webCrawl() throws IOException,MalformedURLException,HttpStatusException {
         {
             String currentUrl = null;
@@ -101,7 +100,9 @@ public class WebCrawler extends Thread implements Runnable{
                         urlsCompactStrings.add(content);
                         LinkedList<String> links = new LinkedList<String>();
                         links = Scrape(currentUrl);
-                        queue.addAll(links);
+                        synchronized (queue) {
+                            queue.addAll(links);
+                        }
                         DB.createWebsites (links, STATUS.UNTAKEN.ordinal());
                         DB.updateContent(currentUrl,content);
                         DB.updateWebsiteHrefs(currentUrl,links);

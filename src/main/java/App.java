@@ -85,7 +85,7 @@ public class App
             }
             else {
                 // indexer code
-                int numberOfThreads = 8 ;
+                int numberOfThreads = 12 ;
                 long beforeTime = System.currentTimeMillis();
                 List<String> indexer_input = new LinkedList<String>();
                 indexer_input =  DB.getWebsitesByStatus(2); // crawled but not indexed

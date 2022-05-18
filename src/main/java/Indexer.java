@@ -82,10 +82,10 @@ public class Indexer extends Thread implements Runnable {
                 System.out.println(w.getStatus());
                 System.out.println("..................................................");
                 input.remove(0);
-                preprocessing(w);
+
                }
             }
-           
+            preprocessing(w);
             System.out.println(w.getURL());
             System.out.println(w.getStatus());
             System.out.println("..................................................");
