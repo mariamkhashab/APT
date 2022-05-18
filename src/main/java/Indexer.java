@@ -127,14 +127,13 @@ public class Indexer {
             all_dicts.add(jo);
         }
         
+        // add words to database
+        db.insertWords(all_words, all_dicts);
+        all_count=0;
 
         //update website status to indexed
         website.setStatus(3);
         db.updateWebpage(website);
-
-        // add words to database
-        db.insertWords(all_words, all_dicts);
-        all_count=0;
     }
 
     public Hashtable<String,JSONObject> processTitles( String[] words,Document doc,String url) throws URISyntaxException, MalformedURLException
