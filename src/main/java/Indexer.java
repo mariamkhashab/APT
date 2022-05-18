@@ -20,12 +20,13 @@ import Models.Website;
 import org.json.JSONObject;
 import org.json.JSONException;
 
-public class Indexer {
+public class Indexer extends Thread implements Runnable {
     Database db = new Database();
 
     Hashtable<String,JSONObject> titlesDict;
     Hashtable<String,JSONObject> headingDict;
     Hashtable<String,JSONObject> textDict;
+    List<String> input;
 
     List<String> all_words = new ArrayList<>();
     List<JSONObject> all_dicts= new ArrayList<>();
@@ -34,8 +35,10 @@ public class Indexer {
     
     List<String> stoppingWords = new ArrayList<String>();
     
-    Indexer()
+    Indexer( Database db,List<String> indexer_input)
     {
+        this.db = db;
+        this.input = indexer_input;
         // fill stoppingWords list from text file
         File file = new File("stoppingWords.txt");
         try {
@@ -52,6 +55,42 @@ public class Indexer {
  
     }
 
+    @Override
+    public void run() {
+            try {
+                startIndexing();
+            } catch (IOException | URISyntaxException | JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+    }
+
+    public void  startIndexing() throws IOException, URISyntaxException, JSONException{
+        while (true)
+        {
+            Website w;
+            synchronized (input)
+            {
+                System.out.println(input.size());
+                
+                System.out.println("..................................................");
+               if (input.size() ==0)
+               break; 
+               else{
+                w = db.getWebpage(input.get(0));
+                System.out.println(w.getURL());
+                System.out.println(w.getStatus());
+                System.out.println("..................................................");
+                input.remove(0);
+                preprocessing(w);
+               }
+            }
+           
+            System.out.println(w.getURL());
+            System.out.println(w.getStatus());
+            System.out.println("..................................................");
+        }
+    }
     public String stem(String input)
     {
         PorterStemmer porterStemmer = new PorterStemmer();

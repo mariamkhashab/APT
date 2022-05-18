@@ -21,7 +21,8 @@ public class App
         
             Database DB = new Database();
             Scanner sc = new Scanner(System.in);
-            Indexer indexer = new Indexer();
+            
+            //Indexer indexer = new Indexer();
 
             System.out.println("====================Search Engine=====================");
             System.out.println("|                 1- Start Crawling                  |");
@@ -84,13 +85,23 @@ public class App
             }
             else {
                 // indexer code
+                int numberOfThreads = 8 ;
+                long beforeTime = System.currentTimeMillis();
                 List<String> indexer_input = new LinkedList<String>();
                 indexer_input =  DB.getWebsitesByStatus(2); // crawled but not indexed
-                for (int i = 0 ; i <indexer_input.size(); i++ )
+        
+                Thread[] threadsList = new Thread[numberOfThreads];
+                for(int i = 0; i < numberOfThreads; i++)
                 {
-                    Website w = DB.getWebpage(indexer_input.get(i));
-                    indexer.preprocessing(w);
+                    threadsList[i] = new Indexer(DB, indexer_input);
+                    threadsList[i].start();
                 }
+                for (Thread thread : threadsList) {
+                    thread.join();
+                }
+               
+                System.out.println("there are "+numberOfThreads +" threads and the Time taken to index 5000 webpage is " + (System.currentTimeMillis() - beforeTime) / 1000 + " seconds.");
+
             }
     
     

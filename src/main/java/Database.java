@@ -235,7 +235,7 @@ public class Database {
         }
     }
 
-    public void updateWebpage(Website website) {
+    public synchronized void updateWebpage(Website website) {
         try {
             mongoConnect();
             MongoDatabase db = mongoClient.getDatabase("SearchEngine");
@@ -249,7 +249,7 @@ public class Database {
         }
     }
 
-    public Website getWebpage(String url) {
+    public synchronized Website getWebpage(String url) {
         try {
             mongoConnect();
             MongoDatabase db = mongoClient.getDatabase("SearchEngine");
@@ -292,7 +292,7 @@ public class Database {
     }
 
 
-    public void insertWords(List<String> words,List<JSONObject> dicts)
+    public synchronized void insertWords(List<String> words,List<JSONObject> dicts)
     {
         
         try {
