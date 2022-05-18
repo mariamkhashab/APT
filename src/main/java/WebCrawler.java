@@ -103,11 +103,17 @@ public class WebCrawler extends Thread implements Runnable{
                         //List<String> links = new LinkedList<String>();
                         LinkedList<String> links = new LinkedList<String>();
                         links = Scrape(currentUrl);
+<<<<<<< Updated upstream
                         queue.addAll(links);
                         /*
                      * Add to database new links and set as unvisited
                      * mark the currentURL as crawled
                      */
+=======
+                        synchronized (queue) {
+                            queue.addAll(links);
+                        }
+>>>>>>> Stashed changes
                         DB.createWebsites (links, STATUS.UNTAKEN.ordinal());
                         DB.updateContent(currentUrl,content);
                     }

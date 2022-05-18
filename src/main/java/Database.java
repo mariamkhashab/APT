@@ -31,7 +31,7 @@ public class Database {
             throw e;
         }
     }
-    public boolean createWebsites(LinkedList<String> url, int status) {
+    public synchronized boolean createWebsites(LinkedList<String> url, int status) {
         try {
             mongoConnect();
             MongoDatabase mDatabase = mongoClient.getDatabase("SearchEngine");
